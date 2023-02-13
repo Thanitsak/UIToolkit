@@ -60,6 +60,7 @@ namespace BestVoxels.TaskList.EditorWindow
 
 
             // Binding Button
+            _taskText.RegisterCallback<KeyDownEvent>(AddTask); // When User hit 'Enter Key'
             _addTaskButton.clicked += AddTask;
         }
         #endregion
@@ -69,7 +70,21 @@ namespace BestVoxels.TaskList.EditorWindow
         #region --Methods-- (Subscriber)
         private void AddTask()
         {
-            Debug.Log("Task Added");
+            if (string.IsNullOrEmpty(_taskText.value) || string.IsNullOrWhiteSpace(_taskText.value)) return;
+
+            Toggle task = new Toggle();
+            task.text = _taskText.text;
+
+            _taskListScrollView.Add(task);
+
+            _taskText.value = string.Empty;
+            _taskText.Focus(); // Keep Cursor stay in the Text Field Box, even when we hit enter or click add button.
+        }
+
+        private void AddTask(KeyDownEvent e)
+        {
+            if (e.keyCode == KeyCode.Return)
+                AddTask();
         }
         #endregion
     }
