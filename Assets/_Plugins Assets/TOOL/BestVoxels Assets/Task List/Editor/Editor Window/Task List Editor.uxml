@@ -5,6 +5,6 @@
         <ui:Button text="Button" display-tooltip-when-elided="true" name="AddTaskButton" />
     </ui:VisualElement>
     <ui:VisualElement name="DisplayingTasks">
-        <ui:ScrollView name="TaskList" />
+        <ui:ScrollView name="TaskListScrollView" />
     </ui:VisualElement>
 </ui:UXML>

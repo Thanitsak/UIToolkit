@@ -9,6 +9,10 @@ namespace BestVoxels.TaskList.EditorWindow
     {
         #region --Fields-- (In Class)
         private VisualElement _container;
+
+        private TextField _taskText;
+        private Button _addTaskButton;
+        private ScrollView _taskListScrollView;
         #endregion
 
 
@@ -35,7 +39,6 @@ namespace BestVoxels.TaskList.EditorWindow
         #region --Methods-- (Built In)
         private void CreateGUI()
         {
-            Debug.Log("TaskListEditor.cs");
             _container = rootVisualElement; // the root of this Window Editor
 
             // Read the UXML file (its data is saved as something called Visual Tree Asset)
@@ -47,6 +50,26 @@ namespace BestVoxels.TaskList.EditorWindow
             StyleSheet styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(_path + "Task List Editor.uss");
             // Add USS to this Window
             _container.styleSheets.Add(styleSheet);
+
+
+            // Find and get the first item that matches Type & Name. (if same named it will return the first, but there is another way to do if wants to get all)
+            _taskText = _container.Q<TextField>("TaskText");
+            _addTaskButton = _container.Q<Button>("AddTaskButton");
+            _taskListScrollView = _container.Q<ScrollView>("TaskListScrollView");
+            // *Important* In large project, try and catch errors if these references can't be found before it become a big problem.
+
+
+            // Binding Button
+            _addTaskButton.clicked += AddTask;
+        }
+        #endregion
+
+
+
+        #region --Methods-- (Subscriber)
+        private void AddTask()
+        {
+            Debug.Log("Task Added");
         }
         #endregion
     }
