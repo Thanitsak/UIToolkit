@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace BestVoxels.TaskList.Tasks
+namespace BestVoxels.TaskList
 {
     [CreateAssetMenu(fileName = "Untitled Task List", menuName = "BestVoxels/Task List/New Task List", order = 0)]
     public class TaskListSO : ScriptableObject

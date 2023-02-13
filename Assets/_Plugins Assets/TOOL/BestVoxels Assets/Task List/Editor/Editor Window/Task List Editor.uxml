@@ -1,8 +1,13 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
     <Style src="project://database/Assets/_Plugins%20Assets/TOOL/BestVoxels%20Assets/Task%20List/Editor/Editor%20Window/Task%20List%20Editor.uss?fileID=7433441132597879392&amp;guid=6248f10e5320042108eff736e81d1372&amp;type=3#Task List Editor" />
+    <ui:VisualElement name="LoadingTasks">
+        <uie:ObjectField label="Tasks To Load:" name="SoObjectField" />
+        <ui:Button text="Load Saved Tasks" display-tooltip-when-elided="true" name="LoadTasksButton" />
+    </ui:VisualElement>
     <ui:VisualElement name="AddingTasks">
-        <ui:TextField picking-mode="Ignore" label="Text Field" value="filler text" name="TaskText" />
-        <ui:Button text="Button" display-tooltip-when-elided="true" name="AddTaskButton" />
+        <ui:Label tabindex="-1" text="Add New Task" display-tooltip-when-elided="true" name="AddTaskHeader" />
+        <ui:TextField name="TaskText" />
+        <ui:Button text="Add" display-tooltip-when-elided="true" name="AddTaskButton" />
     </ui:VisualElement>
     <ui:VisualElement name="DisplayingTasks">
         <ui:ScrollView name="TaskListScrollView" />
