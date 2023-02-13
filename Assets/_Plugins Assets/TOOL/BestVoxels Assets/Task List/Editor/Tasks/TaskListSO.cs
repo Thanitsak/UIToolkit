@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BestVoxels.TaskList.Tasks
 {
-    [CreateAssetMenu(fileName = "Untitled Task List", menuName = "BestVoxels/Create Task List", order = 100)]
+    [CreateAssetMenu(fileName = "Untitled Task List", menuName = "BestVoxels/Task List/New Task List", order = 0)]
     public class TaskListSO : ScriptableObject
     {
         #region --Properties-- (Inspector)
