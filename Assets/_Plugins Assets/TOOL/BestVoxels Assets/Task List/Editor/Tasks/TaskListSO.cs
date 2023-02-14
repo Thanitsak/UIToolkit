@@ -14,12 +14,15 @@ namespace BestVoxels.TaskList
 
 
         #region --Methods-- (Custom PUBLIC)
-        public bool Save(List<string> savedTasks)
+        public void AddTasks(List<string> tasksToAdd)
         {
             Tasks.Clear();
-            Tasks = savedTasks;
+            Tasks = tasksToAdd;
+        }
 
-            return true;
+        public void AddTask(string taskToAdd)
+        {
+            Tasks.Add(taskToAdd);
         }
         #endregion
     }

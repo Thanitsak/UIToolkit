@@ -7,20 +7,22 @@ namespace BestVoxels.TaskList
 {
     public class TaskListEditor : EditorWindow
     {
+        #region --Fields-- (Inspector)
+        [SerializeField] private VisualTreeAsset _uxmlFile; // this data is saved as something called Visual Tree Asset
+        [SerializeField] private StyleSheet _ussFile; // this data is saved as something called Style Sheet
+        #endregion
+
+
+
         #region --Fields-- (In Class)
         private VisualElement _container;
+        private TaskListSO _taskListSO;
 
         private ObjectField _soObjectField;
         private Button _loadTasksButton;
         private TextField _taskText;
         private Button _addTaskButton;
         private ScrollView _taskListScrollView;
-        #endregion
-
-
-
-        #region --Fields-- (Constant)
-        private const string _path = "Assets/_Plugins Assets/TOOL/BestVoxels Assets/Task List/Editor/Editor Window/";
         #endregion
 
 
@@ -43,15 +45,9 @@ namespace BestVoxels.TaskList
         {
             _container = rootVisualElement; // the root of this Window Editor
 
-            // Read the UXML file (its data is saved as something called Visual Tree Asset)
-            VisualTreeAsset visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(_path + "Task List Editor.uxml");
-            // Add UXML to this Window 
-            _container.Add(visualTree.Instantiate());
-
-            // Read the USS file (its data is saved as something called Style Sheet)
-            StyleSheet styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(_path + "Task List Editor.uss");
-            // Add USS to this Window
-            _container.styleSheets.Add(styleSheet);
+            // Add UXML & USS files to this Window 
+            _container.Add(_uxmlFile.Instantiate()); // Another Way Read the UXML file 'VisualTreeAsset visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/_Plugins Assets/TOOL/BestVoxels Assets/Task List/Editor/Editor Window/Task List Editor.uxml");'
+            _container.styleSheets.Add(_ussFile); // Another Way Read the USS file 'StyleSheet styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/_Plugins Assets/TOOL/BestVoxels Assets/Task List/Editor/Editor Window/Task List Editor.uss");'
 
 
             // Find and get the first item that matches Type & Name. (if same named it will return the first, but there is another way to do if wants to get all)
@@ -85,6 +81,15 @@ namespace BestVoxels.TaskList
 
             return task;
         }
+
+        private void SaveTask(string task)
+        {
+            _taskListSO.AddTask(task);
+
+            EditorUtility.SetDirty(_taskListSO);
+            AssetDatabase.SaveAssetIfDirty(_taskListSO);
+            AssetDatabase.Refresh();
+        }
         #endregion
 
 
@@ -92,11 +97,11 @@ namespace BestVoxels.TaskList
         #region --Methods-- (Subscriber)
         private void LoadTasks()
         {
-            TaskListSO taskListSO = _soObjectField.value as TaskListSO;
-            if (taskListSO == null) return;
+            _taskListSO = _soObjectField.value as TaskListSO;
+            if (_taskListSO == null) return;
 
             _taskListScrollView.Clear();
-            foreach (string each in taskListSO.Tasks)
+            foreach (string each in _taskListSO.Tasks)
             {
                 if (string.IsNullOrEmpty(each) || string.IsNullOrWhiteSpace(each)) continue;
 
@@ -108,7 +113,8 @@ namespace BestVoxels.TaskList
         {
             if (string.IsNullOrEmpty(_taskText.value) || string.IsNullOrWhiteSpace(_taskText.value)) return;
 
-            _taskListScrollView.Add(CreateTask(_taskText.text));
+            _taskListScrollView.Add(CreateTask(_taskText.value));
+            SaveTask(_taskText.value);
 
             _taskText.value = string.Empty;
             _taskText.Focus(); // Keep Cursor stay in the Text Field Box, even when we hit enter or click add button.
