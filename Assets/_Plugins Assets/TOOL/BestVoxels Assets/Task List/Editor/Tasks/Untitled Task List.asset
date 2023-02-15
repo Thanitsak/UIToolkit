@@ -20,6 +20,6 @@ MonoBehaviour:
   - name: Check iHave Price
     isCompleted: 0
   - name: Check JIP Price same specs with iHave
-    isCompleted: 0
+    isCompleted: 1
   - name: Research about DP Cables
-    isCompleted: 0
+    isCompleted: 1

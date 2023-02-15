@@ -14,6 +14,7 @@
     <ui:VisualElement name="DisplayingTasks" class="expanding container">
         <ui:Label tabindex="-1" text="Current Tasks" display-tooltip-when-elided="true" name="CurrentTasksHeader" class="header" />
         <ui:ScrollView name="TaskListScrollView" class="expanding border" style="padding-left: 8px; padding-right: 8px; padding-top: 8px; padding-bottom: 8px;" />
+        <ui:Button text="Clear Completed Tasks" display-tooltip-when-elided="true" name="ClearCompletedButton" class="bigbutton" />
         <ui:Button text="Save" display-tooltip-when-elided="true" name="SaveTasksButton" class="bigbutton" />
     </ui:VisualElement>
     <ui:VisualElement name="TrackingTasks" class="container" style="background-color: rgba(0, 0, 0, 0);">

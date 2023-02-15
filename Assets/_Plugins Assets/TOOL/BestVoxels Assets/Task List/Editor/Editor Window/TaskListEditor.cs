@@ -16,7 +16,7 @@ namespace BestVoxels.TaskList
 
 
         #region --Fields-- (In Class)
-        private List<Task> _scrollViewTasks = new List<Task>();
+        private List<Task> _currentTasks = new List<Task>();
 
         private VisualElement _container;
         private TaskListSO _taskListSO;
@@ -26,6 +26,7 @@ namespace BestVoxels.TaskList
         private TextField _taskText;
         private Button _addTaskButton;
         private ScrollView _taskListScrollView;
+        private Button _clearCompletedButton;
         private Button _saveTasksButton;
         #endregion
 
@@ -64,6 +65,7 @@ namespace BestVoxels.TaskList
             _taskText = _container.Q<TextField>("TaskText");
             _addTaskButton = _container.Q<Button>("AddTaskButton");
             _taskListScrollView = _container.Q<ScrollView>("TaskListScrollView");
+            _clearCompletedButton = _container.Q<Button>("ClearCompletedButton");
             _saveTasksButton = _container.Q<Button>("SaveTasksButton");
             // *Important* In large project, try and catch errors if these references can't be found before it become a big problem.
 
@@ -85,6 +87,8 @@ namespace BestVoxels.TaskList
             });
             _addTaskButton.clicked += () => { AddTask(); SaveTask(); };
 
+            _clearCompletedButton.clicked += () => { ClearCompletedTask(); SaveTask(); };
+
             _saveTasksButton.clicked += SaveTask;
         }
         #endregion
@@ -92,13 +96,27 @@ namespace BestVoxels.TaskList
 
 
         #region --Methods-- (Custom PRIVATE)
+        private void UpdateScrollView(List<Task> tasks)
+        {
+            _taskListScrollView.Clear();
+
+            tasks = new List<Task>(tasks); // Fix 'Collection was modified' error, because when passing in _currentTasks, it will get modified when calling AddToScrollView()
+            foreach (Task each in tasks)
+            {
+                if (string.IsNullOrEmpty(each.name) || string.IsNullOrWhiteSpace(each.name)) continue;
+
+                AddToScrollView(each);
+            }
+        }
+
         private void AddToScrollView(Task task)
         {
             Toggle toggle = new Toggle();
             toggle.text = task.name;
+            toggle.value = task.isCompleted;
             _taskListScrollView.Add(toggle);
 
-            _scrollViewTasks.Add(task);
+            _currentTasks.Add(task);
         }
 
         private void AddToScrollView(string taskName)
@@ -107,6 +125,29 @@ namespace BestVoxels.TaskList
 
             AddToScrollView(task);
         }
+
+        private void UpdateCurrentTasks()
+        {
+            _currentTasks.Clear();
+            foreach (Toggle each in _taskListScrollView.Children()) // can also use 'for (int i = 0; i < _taskListScrollView.childCount; i++) { Toggle toggle = _taskListScrollView.ElementAt(i) as Toggle; }'
+            {
+                if (each == null) continue;
+
+                _currentTasks.Add(new Task(each.text, each.value));
+            }
+        }
+
+        private void UpdateCurrentTasksNoCompleted()
+        {
+            _currentTasks.Clear();
+            foreach (Toggle each in _taskListScrollView.Children())
+            {
+                if (each == null) continue;
+                if (each.value) continue;
+
+                _currentTasks.Add(new Task(each.text, each.value));
+            }
+        }
         #endregion
 
 
@@ -114,17 +155,12 @@ namespace BestVoxels.TaskList
         #region --Methods-- (Subscriber)
         private void LoadTasks()
         {
+            _currentTasks.Clear(); // Clear Old Data
+
             _taskListSO = _soObjectField.value as TaskListSO;
             if (_taskListSO == null) return;
 
-            _scrollViewTasks.Clear(); // Clear Old Data
-            _taskListScrollView.Clear();
-            foreach (Task each in _taskListSO.Tasks)
-            {
-                if (string.IsNullOrEmpty(each.name) || string.IsNullOrWhiteSpace(each.name)) continue;
-
-                AddToScrollView(each);
-            }
+            UpdateScrollView(_taskListSO.Tasks);
         }
 
         private void AddTask()
@@ -139,19 +175,19 @@ namespace BestVoxels.TaskList
 
         private void SaveTask()
         {
-            for (int i = 0; i < _taskListScrollView.childCount; i++) //foreach (Toggle each in _taskListScrollView.Children())
-            {
-                Toggle eachToggle = _taskListScrollView.ElementAt(i) as Toggle;
-                if (eachToggle == null) continue;
-
-                _scrollViewTasks[i].isCompleted = eachToggle.value;
-            }
-
-            _taskListSO.ReplaceTasksWith(_scrollViewTasks);
+            UpdateCurrentTasks();
+            _taskListSO.ReplaceTasksWith(_currentTasks);
 
             EditorUtility.SetDirty(_taskListSO);
             AssetDatabase.SaveAssetIfDirty(_taskListSO);
             AssetDatabase.Refresh();
+        }
+
+        private void ClearCompletedTask()
+        {
+            UpdateCurrentTasksNoCompleted();
+
+            UpdateScrollView(_currentTasks);
         }
         #endregion
     }
