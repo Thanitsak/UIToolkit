@@ -45,8 +45,12 @@ namespace BestVoxels.TaskList
         {
             _container = rootVisualElement; // the root of this Window Editor
 
-            // Add UXML & USS files to this Window 
-            _container.Add(_uxmlFile.Instantiate()); // Another Way Read the UXML file 'VisualTreeAsset visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/_Plugins Assets/TOOL/BestVoxels Assets/Task List/Editor/Editor Window/Task List Editor.uxml");'
+            // Make grow property work on Editor Window
+            TemplateContainer uxmlImproved = _uxmlFile.Instantiate();
+            uxmlImproved.style.flexGrow = 1f;
+
+            // Add UXML & USS files to this Window
+            _container.Add(uxmlImproved); // Another Way Read the UXML file 'VisualTreeAsset visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/_Plugins Assets/TOOL/BestVoxels Assets/Task List/Editor/Editor Window/Task List Editor.uxml");'
             _container.styleSheets.Add(_ussFile); // Another Way Read the USS file 'StyleSheet styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/_Plugins Assets/TOOL/BestVoxels Assets/Task List/Editor/Editor Window/Task List Editor.uss");'
 
 
