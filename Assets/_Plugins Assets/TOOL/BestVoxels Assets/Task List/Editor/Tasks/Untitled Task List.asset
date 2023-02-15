@@ -13,9 +13,13 @@ MonoBehaviour:
   m_Name: Untitled Task List
   m_EditorClassIdentifier: 
   <Tasks>k__BackingField:
-  - 1
-  - 2
-  - 3
-  - 
-  - 4
-  - test task
+  - name: Research More about PC
+    isCompleted: 0
+  - name: Compare Prices
+    isCompleted: 0
+  - name: Check iHave Price
+    isCompleted: 0
+  - name: Check JIP Price same specs with iHave
+    isCompleted: 0
+  - name: Research about DP Cables
+    isCompleted: 0

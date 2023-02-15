@@ -31,14 +31,14 @@
 }
 
 .background {
-    background-color: rgba(102, 214, 131, 0.39);
+    background-color: rgba(55, 164, 83, 0.69);
 }
 
 .border {
-    border-left-color: rgba(102, 214, 131, 0.39);
-    border-right-color: rgba(102, 214, 131, 0.39);
-    border-top-color: rgba(102, 214, 131, 0.39);
-    border-bottom-color: rgba(102, 214, 131, 0.39);
+    border-left-color: rgba(55, 164, 83, 0.69);
+    border-right-color: rgba(55, 164, 83, 0.69);
+    border-top-color: rgba(55, 164, 83, 0.69);
+    border-bottom-color: rgba(55, 164, 83, 0.69);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;

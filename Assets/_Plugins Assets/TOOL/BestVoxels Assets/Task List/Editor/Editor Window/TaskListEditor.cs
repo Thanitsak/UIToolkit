@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements; // for accessing components in the UI Builder Library that are 'Generic' and available to in-game UI.
@@ -15,6 +16,8 @@ namespace BestVoxels.TaskList
 
 
         #region --Fields-- (In Class)
+        private List<Task> _scrollViewTasks = new List<Task>();
+
         private VisualElement _container;
         private TaskListSO _taskListSO;
 
@@ -23,6 +26,7 @@ namespace BestVoxels.TaskList
         private TextField _taskText;
         private Button _addTaskButton;
         private ScrollView _taskListScrollView;
+        private Button _saveTasksButton;
         #endregion
 
 
@@ -60,6 +64,7 @@ namespace BestVoxels.TaskList
             _taskText = _container.Q<TextField>("TaskText");
             _addTaskButton = _container.Q<Button>("AddTaskButton");
             _taskListScrollView = _container.Q<ScrollView>("TaskListScrollView");
+            _saveTasksButton = _container.Q<Button>("SaveTasksButton");
             // *Important* In large project, try and catch errors if these references can't be found before it become a big problem.
 
 
@@ -70,29 +75,37 @@ namespace BestVoxels.TaskList
             // Binding Button
             _loadTasksButton.clicked += LoadTasks;
 
-            _taskText.RegisterCallback<KeyDownEvent>(AddTask); // When User hit 'Enter Key'
-            _addTaskButton.clicked += AddTask;
+            _taskText.RegisterCallback<KeyDownEvent>(e =>
+            {
+                if (e.keyCode == KeyCode.Return) // When User hit 'Enter Key'
+                {
+                    AddTask();
+                    SaveTask();
+                }
+            });
+            _addTaskButton.clicked += () => { AddTask(); SaveTask(); };
+
+            _saveTasksButton.clicked += SaveTask;
         }
         #endregion
 
 
 
         #region --Methods-- (Custom PRIVATE)
-        private Toggle CreateTask(string text)
+        private void AddToScrollView(Task task)
         {
-            Toggle task = new Toggle();
-            task.text = text;
+            Toggle toggle = new Toggle();
+            toggle.text = task.name;
+            _taskListScrollView.Add(toggle);
 
-            return task;
+            _scrollViewTasks.Add(task);
         }
 
-        private void SaveTask(string task)
+        private void AddToScrollView(string taskName)
         {
-            _taskListSO.AddTask(task);
+            Task task = new Task(taskName);
 
-            EditorUtility.SetDirty(_taskListSO);
-            AssetDatabase.SaveAssetIfDirty(_taskListSO);
-            AssetDatabase.Refresh();
+            AddToScrollView(task);
         }
         #endregion
 
@@ -104,12 +117,13 @@ namespace BestVoxels.TaskList
             _taskListSO = _soObjectField.value as TaskListSO;
             if (_taskListSO == null) return;
 
+            _scrollViewTasks.Clear(); // Clear Old Data
             _taskListScrollView.Clear();
-            foreach (string each in _taskListSO.Tasks)
+            foreach (Task each in _taskListSO.Tasks)
             {
-                if (string.IsNullOrEmpty(each) || string.IsNullOrWhiteSpace(each)) continue;
+                if (string.IsNullOrEmpty(each.name) || string.IsNullOrWhiteSpace(each.name)) continue;
 
-                _taskListScrollView.Add(CreateTask(each));
+                AddToScrollView(each);
             }
         }
 
@@ -117,17 +131,27 @@ namespace BestVoxels.TaskList
         {
             if (string.IsNullOrEmpty(_taskText.value) || string.IsNullOrWhiteSpace(_taskText.value)) return;
 
-            _taskListScrollView.Add(CreateTask(_taskText.value));
-            SaveTask(_taskText.value);
+            AddToScrollView(_taskText.value);
 
             _taskText.value = string.Empty;
             _taskText.Focus(); // Keep Cursor stay in the Text Field Box, even when we hit enter or click add button.
         }
 
-        private void AddTask(KeyDownEvent e)
+        private void SaveTask()
         {
-            if (e.keyCode == KeyCode.Return)
-                AddTask();
+            for (int i = 0; i < _taskListScrollView.childCount; i++) //foreach (Toggle each in _taskListScrollView.Children())
+            {
+                Toggle eachToggle = _taskListScrollView.ElementAt(i) as Toggle;
+                if (eachToggle == null) continue;
+
+                _scrollViewTasks[i].isCompleted = eachToggle.value;
+            }
+
+            _taskListSO.ReplaceTasksWith(_scrollViewTasks);
+
+            EditorUtility.SetDirty(_taskListSO);
+            AssetDatabase.SaveAssetIfDirty(_taskListSO);
+            AssetDatabase.Refresh();
         }
         #endregion
     }

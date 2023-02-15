@@ -8,19 +8,19 @@ namespace BestVoxels.TaskList
     {
         #region --Properties-- (Inspector)
         // JUST TEMP AFTER, Remove [SerializeField]  &  Make it Public like a normal Auto Properties
-        [field: SerializeField] public List<string> Tasks { get; private set; } = new List<string>();
+        [field: SerializeField] public List<Task> Tasks { get; private set; } = new List<Task>();
         #endregion
 
 
 
         #region --Methods-- (Custom PUBLIC)
-        public void AddTasks(List<string> tasksToAdd)
+        public void ReplaceTasksWith(List<Task> tasksToAdd)
         {
             Tasks.Clear();
-            Tasks = tasksToAdd;
+            Tasks = new List<Task>(tasksToAdd); // assign without reference
         }
 
-        public void AddTask(string taskToAdd)
+        public void AddTask(Task taskToAdd)
         {
             Tasks.Add(taskToAdd);
         }
