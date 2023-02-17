@@ -19,6 +19,6 @@
     </ui:VisualElement>
     <ui:VisualElement name="TrackingTasks" class="container" style="background-color: rgba(0, 0, 0, 0);">
         <ui:Label tabindex="-1" text="Progress" display-tooltip-when-elided="true" name="ProgressHeader" class="header" />
-        <ui:ProgressBar value="50" title="my-progress" name="TaskProgressBar" />
+        <ui:ProgressBar value="0.5" title="---%" name="TaskProgressBar" high-value="1" />
     </ui:VisualElement>
 </ui:UXML>

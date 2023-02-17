@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements; // for accessing components in the UI Builder Library that are 'Generic' and available to in-game UI.
@@ -28,6 +29,7 @@ namespace BestVoxels.TaskList
         private ScrollView _taskListScrollView;
         private Button _clearCompletedButton;
         private Button _saveTasksButton;
+        private ProgressBar _progressBar;
         #endregion
 
 
@@ -67,6 +69,7 @@ namespace BestVoxels.TaskList
             _taskListScrollView = _container.Q<ScrollView>("TaskListScrollView");
             _clearCompletedButton = _container.Q<Button>("ClearCompletedButton");
             _saveTasksButton = _container.Q<Button>("SaveTasksButton");
+            _progressBar = _container.Q<ProgressBar>("TaskProgressBar");
             // *Important* In large project, try and catch errors if these references can't be found before it become a big problem.
 
 
@@ -75,21 +78,25 @@ namespace BestVoxels.TaskList
 
 
             // Binding Button
-            _loadTasksButton.clicked += LoadTasks;
+            _loadTasksButton.clicked += () => { LoadTasks(); UpdateProgressBar(); };
 
             _taskText.RegisterCallback<KeyDownEvent>(e =>
             {
                 if (e.keyCode == KeyCode.Return) // When User hit 'Enter Key'
                 {
                     AddTask();
+                    UpdateProgressBar();
                     SaveTask();
                 }
             });
-            _addTaskButton.clicked += () => { AddTask(); SaveTask(); };
+            _addTaskButton.clicked += () => { AddTask(); UpdateProgressBar(); SaveTask(); };
 
-            _clearCompletedButton.clicked += () => { ClearCompletedTask(); SaveTask(); };
+            _clearCompletedButton.clicked += () => { ClearCompletedTask(); UpdateProgressBar(); SaveTask(); };
 
             _saveTasksButton.clicked += SaveTask;
+
+            // Setup
+            UpdateProgressBar();
         }
         #endregion
 
@@ -114,6 +121,8 @@ namespace BestVoxels.TaskList
             Toggle toggle = new Toggle();
             toggle.text = task.name;
             toggle.value = task.isCompleted;
+            toggle.RegisterValueChangedCallback(e => UpdateProgressBar());
+
             _taskListScrollView.Add(toggle);
 
             _currentTasks.Add(task);
@@ -188,6 +197,20 @@ namespace BestVoxels.TaskList
             UpdateCurrentTasksNoCompleted();
 
             UpdateScrollView(_currentTasks);
+        }
+
+        private void UpdateProgressBar()
+        {
+            UpdateCurrentTasks();
+
+            float progressValue = 0f;
+            if (_currentTasks.Count > 0)
+            {
+                progressValue = (float)_currentTasks.Count(x => x.isCompleted) / (float)_currentTasks.Count;
+            }
+
+            _progressBar.value = progressValue;
+            _progressBar.title = $"{(progressValue * 100f):N0}%";
         }
         #endregion
     }
