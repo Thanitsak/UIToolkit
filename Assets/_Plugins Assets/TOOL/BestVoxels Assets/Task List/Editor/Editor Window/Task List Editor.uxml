@@ -4,6 +4,10 @@
         <uie:ObjectField label="Tasks To Load:" name="SoObjectField" />
         <ui:Button text="Load" display-tooltip-when-elided="true" name="LoadTasksButton" class="bigbutton" />
     </ui:VisualElement>
+    <ui:VisualElement name="SearchingTasks" class="container" style="background-color: rgba(0, 0, 0, 0);">
+        <ui:Label tabindex="-1" text="Search Task" display-tooltip-when-elided="true" name="SearchHeader" class="header" />
+        <uie:ToolbarSearchField focusable="true" name="SearchBox" style="width: auto;" />
+    </ui:VisualElement>
     <ui:VisualElement name="AddingTasks" class="container">
         <ui:Label tabindex="-1" text="Add New Task" display-tooltip-when-elided="true" name="AddTaskHeader" class="header" />
         <ui:VisualElement name="SubAddingTasks" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); flex-direction: row;">

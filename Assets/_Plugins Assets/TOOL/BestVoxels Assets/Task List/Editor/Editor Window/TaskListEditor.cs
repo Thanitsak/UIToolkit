@@ -24,6 +24,7 @@ namespace BestVoxels.TaskList
 
         private ObjectField _soObjectField;
         private Button _loadTasksButton;
+        private ToolbarSearchField _searchBox;
         private TextField _taskText;
         private Button _addTaskButton;
         private ScrollView _taskListScrollView;
@@ -64,6 +65,7 @@ namespace BestVoxels.TaskList
             // Find and get the first item that matches Type & Name. (if same named it will return the first, but there is another way to do if wants to get all)
             _soObjectField = _container.Q<ObjectField>("SoObjectField");
             _loadTasksButton = _container.Q<Button>("LoadTasksButton");
+            _searchBox = _container.Q<ToolbarSearchField>("SearchBox");
             _taskText = _container.Q<TextField>("TaskText");
             _addTaskButton = _container.Q<Button>("AddTaskButton");
             _taskListScrollView = _container.Q<ScrollView>("TaskListScrollView");
@@ -79,6 +81,8 @@ namespace BestVoxels.TaskList
 
             // Binding Button
             _loadTasksButton.clicked += () => { LoadTasks(); UpdateProgressBar(); };
+
+            _searchBox.RegisterValueChangedCallback(SearchForText);
 
             _taskText.RegisterCallback<KeyDownEvent>(e =>
             {
@@ -211,6 +215,22 @@ namespace BestVoxels.TaskList
 
             _progressBar.value = progressValue;
             _progressBar.title = $"{(progressValue * 100f):N0}%";
+        }
+
+        private void SearchForText(ChangeEvent<string> changeEvent)
+        {
+            if (changeEvent == null) return;
+            string inputText = changeEvent.newValue.ToLower();
+            
+            _taskListScrollView.Children().ToList().ForEach((VisualElement e) =>
+            {
+                Toggle t = e as Toggle;
+
+                if (t.text.ToLower().Contains(inputText) && !string.IsNullOrEmpty(inputText))
+                    t.AddToClassList("highlight");
+                else
+                    t.RemoveFromClassList("highlight");
+            });
         }
         #endregion
     }
