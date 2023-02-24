@@ -25,4 +25,9 @@
         <ui:Label tabindex="-1" text="Progress" display-tooltip-when-elided="true" name="ProgressHeader" class="header" />
         <ui:ProgressBar value="0.5" title="---%" name="TaskProgressBar" high-value="1" />
     </ui:VisualElement>
+    <ui:VisualElement name="DisplayingNotification" class="container">
+        <ui:VisualElement name="Border" class="border" style="justify-content: space-around;">
+            <ui:Label tabindex="-1" text="Notification Status..." display-tooltip-when-elided="true" name="NotificationText" style="align-items: center; align-self: center; padding-left: 6px; padding-right: 6px; padding-top: 6px; padding-bottom: 6px; font-size: 13px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
 </ui:UXML>

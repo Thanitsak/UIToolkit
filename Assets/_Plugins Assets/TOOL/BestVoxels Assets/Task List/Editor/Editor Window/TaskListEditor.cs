@@ -29,6 +29,7 @@ namespace BestVoxels.TaskList
         private Button _clearCompletedButton;
         private Button _saveTasksButton;
         private ProgressBar _progressBar;
+        private Label _notificationText;
         #endregion
 
 
@@ -70,6 +71,7 @@ namespace BestVoxels.TaskList
             _clearCompletedButton = _container.Q<Button>("ClearCompletedButton");
             _saveTasksButton = _container.Q<Button>("SaveTasksButton");
             _progressBar = _container.Q<ProgressBar>("TaskProgressBar");
+            _notificationText = _container.Q<Label>("NotificationText");
             // *Important* In large project, try and catch errors if these references can't be found before it become a big problem.
 
 
@@ -78,7 +80,7 @@ namespace BestVoxels.TaskList
 
 
             // Binding Button
-            _loadTasksButton.clicked += () => { LoadTasks(); UpdateProgressBar(); };
+            _loadTasksButton.clicked += () => { LoadTasks(); UpdateProgressBar(false); };
 
             _searchBox.RegisterValueChangedCallback(SearchForText);
 
@@ -87,18 +89,19 @@ namespace BestVoxels.TaskList
                 if (e.keyCode == KeyCode.Return) // When User hit 'Enter Key'
                 {
                     AddTask();
-                    UpdateProgressBar();
-                    SaveTask();
+                    UpdateProgressBar(false);
+                    SaveTask(false);
                 }
             });
-            _addTaskButton.clicked += () => { AddTask(); UpdateProgressBar(); SaveTask(); };
+            _addTaskButton.clicked += () => { AddTask(); UpdateProgressBar(false); SaveTask(false); };
 
-            _clearCompletedButton.clicked += () => { ClearCompletedTask(); UpdateProgressBar(); SaveTask(); };
+            _clearCompletedButton.clicked += () => { ClearCompletedTask(); UpdateProgressBar(false); SaveTask(false); };
 
-            _saveTasksButton.clicked += SaveTask;
+            _saveTasksButton.clicked += () => SaveTask();
 
             // Setup
-            UpdateProgressBar();
+            UpdateProgressBar(false);
+            _notificationText.text = "Please load a task list to continue.";
         }
         #endregion
 
@@ -138,22 +141,34 @@ namespace BestVoxels.TaskList
         private void LoadTasks()
         {
             _taskListSO = _soObjectField.value as TaskListSO;
-            if (_taskListSO == null) return;
+            if (_taskListSO == null)
+            {
+                _notificationText.text = $"Failed to load task list.";
+                return;
+            }
 
             UpdateScrollView(_taskListSO.TaskData);
+
+            _notificationText.text = $"{_uxmlFile.name} successfully loaded.";
         }
 
         private void AddTask()
         {
-            if (string.IsNullOrEmpty(_taskText.value) || string.IsNullOrWhiteSpace(_taskText.value)) return;
+            if (string.IsNullOrEmpty(_taskText.value) || string.IsNullOrWhiteSpace(_taskText.value))
+            {
+                _notificationText.text = "Can't add empty task!";
+                return;
+            }
 
             AddToScrollView(new TaskEditor(_taskText.value));
 
             _taskText.value = string.Empty;
             _taskText.Focus(); // Keep Cursor stay in the Text Field Box, even when we hit enter or click add button.
+
+            _notificationText.text = "Task added successfully.";
         }
 
-        private void SaveTask()
+        private void SaveTask(bool showStatus=true)
         {
             // TODO : Maybe as a seperate method
             List<TaskData> taskData = new List<TaskData>();
@@ -167,6 +182,9 @@ namespace BestVoxels.TaskList
             EditorUtility.SetDirty(_taskListSO);
             AssetDatabase.SaveAssetIfDirty(_taskListSO);
             AssetDatabase.Refresh();
+
+            if (showStatus)
+                _notificationText.text = "Save successful!";
         }
 
         private void ClearCompletedTask()
@@ -181,9 +199,11 @@ namespace BestVoxels.TaskList
             }
 
             UpdateScrollView(taskData);
+
+            _notificationText.text = "Clear completed tasks successfully!";
         }
 
-        private void UpdateProgressBar()
+        private void UpdateProgressBar(bool showStatus=true)
         {
             float progressValue = 0f;
             if (_scrollViewTasks.childCount > 0)
@@ -194,22 +214,30 @@ namespace BestVoxels.TaskList
 
             _progressBar.value = progressValue;
             _progressBar.title = $"{(progressValue * 100f):N0}%";
+
+            if (showStatus)
+                _notificationText.text = "Progress updated. Don't forget to saved!";
         }
 
         private void SearchForText(ChangeEvent<string> changeEvent)
         {
             if (changeEvent == null) return;
             string inputText = changeEvent.newValue.ToLower();
-            
+
+            int foundCounter = 0;
             _scrollViewTasks.Children().ToList().ForEach((VisualElement e) =>
             {
                 TaskEditor t = e as TaskEditor;
 
                 if (t.Text.ToLower().Contains(inputText) && !string.IsNullOrEmpty(inputText))
+                {
                     t.Label.AddToClassList("highlight");
+                    foundCounter++;
+                }
                 else
                     t.Label.RemoveFromClassList("highlight");
             });
+            _notificationText.text = $"{foundCounter} tasks found.";
         }
         #endregion
     }
