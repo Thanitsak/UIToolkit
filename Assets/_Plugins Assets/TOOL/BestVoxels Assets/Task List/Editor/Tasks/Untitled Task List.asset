@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43db8f74e103340c5b49703b9d29a68c, type: 3}
   m_Name: Untitled Task List
   m_EditorClassIdentifier: 
-  <Tasks>k__BackingField:
-  - name: Research More about PC
-    isCompleted: 0
-  - name: Compare Prices
-    isCompleted: 0
-  - name: Check iHave Price
-    isCompleted: 0
-  - name: Check JIP Price same specs with iHave
-    isCompleted: 1
-  - name: Research about DP Cables
-    isCompleted: 1
+  <TaskData>k__BackingField:
+  - <Text>k__BackingField: Test 1
+    <IsCompleted>k__BackingField: 0
+  - <Text>k__BackingField: Test 2
+    <IsCompleted>k__BackingField: 0
+  - <Text>k__BackingField: Test 3
+    <IsCompleted>k__BackingField: 1
+  - <Text>k__BackingField: Test 4
+    <IsCompleted>k__BackingField: 1
+  - <Text>k__BackingField: Test 5
+    <IsCompleted>k__BackingField: 1

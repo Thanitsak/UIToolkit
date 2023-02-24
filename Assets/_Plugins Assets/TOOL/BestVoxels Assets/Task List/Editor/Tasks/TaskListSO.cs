@@ -7,22 +7,21 @@ namespace BestVoxels.TaskList
     public class TaskListSO : ScriptableObject
     {
         #region --Properties-- (Inspector)
-        // JUST TEMP AFTER, Remove [SerializeField]  &  Make it Public like a normal Auto Properties
-        [field: SerializeField] public List<Task> Tasks { get; private set; } = new List<Task>();
+        [field: SerializeField] public List<TaskData> TaskData { get; private set; } = new List<TaskData>();
         #endregion
 
 
 
         #region --Methods-- (Custom PUBLIC)
-        public void ReplaceTasksWith(List<Task> tasksToAdd)
+        public void ReplaceTasksWith(List<TaskData> dataToAdd)
         {
-            Tasks.Clear();
-            Tasks = new List<Task>(tasksToAdd); // assign without reference
+            TaskData.Clear();
+            TaskData = new List<TaskData>(dataToAdd); // assign without reference
         }
 
-        public void AddTask(Task taskToAdd)
+        public void AddTask(TaskData dataToAdd)
         {
-            Tasks.Add(taskToAdd);
+            TaskData.Add(dataToAdd);
         }
         #endregion
     }
